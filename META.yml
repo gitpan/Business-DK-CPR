@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name: Business-DK-CPR
-version: 0.01
+version: 0.02
 author:
   - Jonas B. Nielsen, (jonasbn) <jonasbn@cpan.org>
 abstract: a danish CPR code generator/validator
