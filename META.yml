@@ -1,9 +1,9 @@
 ---
 name: Business-DK-CPR
-version: 0.03
+version: 0.04
 author:
   - 'Jonas B. Nielsen, (jonasbn) <jonasbn@cpan.org>'
-abstract: a danish CPR code generator/validator
+abstract: a Danish CPR code generator/validator
 license: artistic
 resources:
   license: http://opensource.org/licenses/artistic-license.php
@@ -13,12 +13,17 @@ requires:
   Carp: 0
   Date::Calc: 0
   Exporter: 0
+  Hash::Merge: 0
   Test::Exception: 0
+  Tie::IxHash: 0
 provides:
   Business::DK::CPR:
     file: lib/Business/DK/CPR.pm
-    version: 0.03
-generated_by: Module::Build version 0.2806
+    version: 0.04
+  Data::FormValidator::Constraints::Business::DK::CPR:
+    file: lib/Data/FormValidator/Constraints/Business/DK/CPR.pm
+    version: 0.01
+generated_by: Module::Build version 0.2808
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html
   version: 1.2

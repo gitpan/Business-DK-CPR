@@ -1,4 +1,4 @@
-# $Id: pod.t 1697 2007-02-12 11:52:41Z jonasbn $ 
+# $Id: pod.t,v 1.1 2007-03-13 19:40:15 jonasbn Exp $ 
 
 use Test::More;
 

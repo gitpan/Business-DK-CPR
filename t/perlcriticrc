@@ -1,18 +1,30 @@
 
-# $Id$
+# $Id: perlcriticrc,v 1.3 2008-09-09 19:15:52 jonasbn Exp $
 
-severity = 5
+severity = 1
+verbose = 8
 
 #------------------------------------------------------------------------------
 
-[-CodeLayout::RequireTidyCode]
+[CodeLayout::RequireTidyCode]
 
 [Documentation::RequirePodSections]
-lib_sections    = NAME|DESCRIPTION|SYNOPSIS|AUTHOR|COPYRIGHT
-script_sections = NAME|DESCRIPTION|SYNOPSIS|AUTHOR|COPYRIGHT
+lib_sections    = NAME|VERSION|SYNOPSIS|DESCRIPTION|SUBROUTINES AND METHODS|DIAGNOSTICS|CONFIGURATION AND ENVIRONMENT|DEPENDENCIES|INCOMPATIBILITIES|BUGS AND LIMITATIONS|TEST AND QUALITY|TODO|SEE ALSO|BUG REPORTING|AUTHOR|COPYRIGHT|LICENSE
+script_sections = NAME|VERSION|SYNOPSIS|DESCRIPTION|SUBROUTINES AND METHODS|DIAGNOSTICS|CONFIGURATION AND ENVIRONMENT|DEPENDENCIES|INCOMPATIBILITIES|BUGS AND LIMITATIONS|TEST AND QUALITY|TODO|SEE ALSO|BUG REPORTING|AUTHOR|COPYRIGHT|LICENSE
 
 [Miscellanea::RequireRcsKeywords]
-keywords = URL Date Author Revision
+keywords = Id
 
 [CodeLayout::ProhibitHardTabs]
 allow_leading_tabs = 0
+
+[-InputOutput::RequireCheckedSyscalls]
+functions = print
+
+[-ValuesAndExpressions::ProhibitConstantPragma]
+
+[-ValuesAndExpressions::ProhibitMagicNumbers]
+
+[-NamingConventions::ProhibitMixedCaseSubs]
+
+[-Miscellanea::ProhibitTies]

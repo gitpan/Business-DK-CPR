@@ -1,10 +1,13 @@
 TODO file for Business-DK-CPR
 
-$Id: TODO,v 1.4 2006/07/02 13:23:09 jonasbn Exp $
-
-- Investigate new CPR number strategy used by CPR in Denmark.
+$Id: TODO,v 1.5 2008-09-09 19:15:28 jonasbn Exp $
   
 - Add more documentation on CPR format
 
-- Add capability of using subs as constraints in Data::FormValidator
+- Add use of Params::Validate instead of B::DK::PO?
 
+- Remove export of _checkdate
+
+- Implement OOP variation
+
+- Implement amount parameter for generators?

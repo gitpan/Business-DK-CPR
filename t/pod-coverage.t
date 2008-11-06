@@ -1,5 +1,5 @@
 
-# $Id$
+# $Id: pod-coverage.t,v 1.1 2007-03-13 19:40:15 jonasbn Exp $
 
 use Test::More;
 

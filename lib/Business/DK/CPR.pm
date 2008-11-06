@@ -1,44 +1,69 @@
 package Business::DK::CPR;
 
-# $Id: CPR.pm,v 1.6 2006/03/01 07:42:54 jonasbn Exp $
+# $Id: CPR.pm,v 1.9 2008-09-09 19:15:44 jonasbn Exp $
 
 use strict;
 use warnings;
-use vars qw($VERSION @ISA @EXPORT_OK);
-use Carp qw(croak);
+use vars qw($VERSION @EXPORT_OK);
+use Carp qw(croak carp);
 use Business::DK::CVR qw(_length _calculate_sum);
 use Business::DK::PO qw(_argument _content);
 use Date::Calc qw(check_date);
+use Hash::Merge qw( merge );
+use base 'Exporter';
+use integer;
+use Tie::IxHash;
 
-require Exporter;
+$VERSION   = '0.04';
+@EXPORT_OK = qw(
+    validate
+    validateCPR
+    generate
+    validate1968
+    generate1968
+    validate2007
+    generate2007
+    calculate
+    _checkdate
+);
 
-$VERSION   = '0.03';
-@ISA       = qw(Exporter);
-@EXPORT_OK = qw(validate calculate _checkdate);
-
-use constant MODULUS_OPERAND => 11;
-use constant DATE_LENGTH     => 6;
+use constant MODULUS_OPERAND_1968 => 11;
+use constant MODULUS_OPERAND_2007 => 6;
+use constant DATE_LENGTH          => 6;
+use constant VALID                => 1;
+use constant VALID_MALE           => 1;
+use constant VALID_FEMALE         => 2;
+use constant INVALID              => 0;
+use constant FEMALE               => 'female';
+use constant MALE                 => 'male';
 
 my @controlcifers = qw(4 3 2 7 6 5 4 3 2 1);
+
+my %female_seeds;
+tie %female_seeds, 'Tie::IxHash',
+    4 => { max => 9994, min => 10 },
+    2 => { max => 9998, min => 8 },
+    6 => { max => 9996, min => 12 };
+
+my %male_seeds;
+tie %male_seeds, 'Tie::IxHash',
+    1 => { max => 9997, min => 7 },
+    3 => { max => 9999, min => 9 },
+    5 => { max => 9995, min => 11 };
 
 sub calculate {
     my $birthdate = shift;
 
-    if ( !$birthdate ) {
-        _argument(DATE_LENGTH);
-    }
-    _content($birthdate);
-    _length( $birthdate, DATE_LENGTH );
-    _checkdate($birthdate);
+    _assert_date($birthdate);
 
     my @cprs;
     for ( 1 .. 999 ) {
-        my $n = sprintf( "%03s", $_ );
+        my $n = sprintf '%03s', $_;
 
         my $sum = _calculate_sum( ( $birthdate . $n ), \@controlcifers );
-        my $mod = $sum % MODULUS_OPERAND;
+        my $mod = $sum % MODULUS_OPERAND_1968;
 
-        my $checkciffer = ( MODULUS_OPERAND - $mod );
+        my $checkciffer = ( MODULUS_OPERAND_1968 - $mod );
 
         if ( $checkciffer < 10 ) {
             push @cprs, ( $birthdate . $n . $checkciffer );
@@ -48,46 +73,243 @@ sub calculate {
     if (wantarray) {
         return @cprs;
     } else {
-        return scalar(@cprs);
+        return scalar @cprs;
     }
+}
+
+sub _assert_date {
+    my $birthdate = shift;
+
+    if ( !$birthdate ) {
+        _argument(DATE_LENGTH);
+    }
+    _content($birthdate);
+    _length( $birthdate, DATE_LENGTH );
+    _checkdate($birthdate);
+
+    return VALID;
+}
+
+sub validateCPR {
+    return validate(shift);
 }
 
 sub validate {
     my $controlnumber = shift;
 
-    my $controlcode_length = scalar(@controlcifers);
+    my $rv;
+    if ( $rv = validate1968($controlnumber) ) {
+        return $rv;
+    } else {
+        return validate2007($controlnumber);
+    }
+}
 
-    if ( !$controlnumber ) {
+sub validate2007 {
+    my $controlnumber = shift;
+
+    _assert_date( substr $controlnumber, 0, DATE_LENGTH );
+
+    _assert_controlnumber($controlnumber);
+
+    my $control = substr $controlnumber, DATE_LENGTH, 4;
+
+    my $remainder = $control % MODULUS_OPERAND_2007;
+
+    my %seeds = %{ merge( \%male_seeds, \%female_seeds ); };
+
+    if ( my $series = $seeds{$remainder} ) {
+        if ( $control < $seeds{$remainder}->{min} ) {
+            return INVALID;
+        } elsif ( $control > $seeds{$remainder}->{max} ) {
+            return INVALID;
+        }
+    } elsif ( ( $control == 0 or $control == 6 ) && $remainder == 0 ) {
+        return INVALID;
+    }
+
+    if ( $female_seeds{$remainder} ) {
+        return VALID_FEMALE;
+    } elsif ( $male_seeds{$remainder} ) {
+        return VALID_MALE;
+    } elsif ( $remainder == 0 ) {
+        if ( _is_equal($control) ) {
+            return VALID_FEMALE;
+        } else {
+            return VALID_MALE;
+        }
+    } else {
+        return INVALID;
+    }
+}
+
+sub validate1968 {
+    my $controlnumber = shift;
+
+    _assert_date( substr $controlnumber, 0, DATE_LENGTH );
+    _assert_controlnumber($controlnumber);
+
+    my $sum = _calculate_sum( $controlnumber, \@controlcifers );
+
+    #Note this might look like it is turned upside down but no rest from the
+    #modulus calculation indicated validity
+    if ( $sum % MODULUS_OPERAND_1968 ) {
+        return INVALID;
+    } else {
+        if ( _is_equal($sum) ) {
+            return VALID_MALE;
+        } else {
+            return VALID_FEMALE;
+        }
+    }
+}
+
+sub _is_equal {
+    my $operand = shift;
+
+    return ( not( $operand % 2 ) );
+}
+
+sub _assert_controlnumber {
+    my $controlnumber = shift;
+
+    my $controlcode_length = scalar @controlcifers;
+
+    if ( not $controlnumber ) {
         _argument($controlcode_length);
     }
     _content($controlnumber);
     _length( $controlnumber, $controlcode_length );
 
-    my $sum = _calculate_sum( $controlnumber, \@controlcifers );
-
-    if ( $sum % MODULUS_OPERAND ) {
-        return 0;
-    } else {
-        return 1;
-    }
+    return VALID;
 }
 
 sub _checkdate {
     my $birthdate = shift;
 
-    if ( !$birthdate ) {
-        croak "argument should be provided";
+    if ( not $birthdate ) {
+        croak 'argument for birthdate should be provided';
     }
 
-    if ( !( $birthdate =~ m/^(\d{2})(\d{2})(\d{2})$/ ) ) {
+    if (not($birthdate =~ m{^ #beginning of line
+              (\d{2}) #day of month, 2 digit representation, 01-31
+              (\d{2}) #month, 2 digit representation jan 01 - dec 12
+              (\d{2}) #year, 2 digit representation
+              $ #end of line
+              }xm
+        )
+        )
+    {
         croak "argument: $birthdate could not be parsed";
     }
 
-    if ( !check_date( $3, $2, $1 ) ) {
+    if ( not check_date( $3, $2, $1 ) ) {
         croak
-            "argument: $birthdate has to be a valid date in the following format: ddmmyy";
+            "argument: $birthdate has to be a valid date in the format: ddmmyy";
     }
-    return 1;
+    return VALID;
+}
+
+sub generate {
+    my ( $birthdate, $gender ) = @_;
+
+    my %cprs;
+
+    my @cprs1968 = generate1968( $birthdate, $gender );
+    my @cprs2007 = generate2007( $birthdate, $gender );
+
+    %cprs = map { $_ => 1 } @cprs1968;
+    %cprs = map { $_ => 1 } @cprs2007;
+
+    if (wantarray) {
+        return keys %cprs;
+    } else {
+        return scalar keys %cprs;
+    }
+}
+
+sub generate2007 {
+    my $birthdate = shift;
+    my $gender = shift || undef;
+
+    _assert_date($birthdate);
+
+    my @cprs;
+    my %seeds;
+
+    if ( defined $gender ) {
+        if ( $gender eq MALE ) {
+            %seeds = %male_seeds;
+        } elsif ( $gender eq FEMALE ) {
+            %seeds = %female_seeds;
+        } else {
+            carp("Unknown gender: $gender, assuming no gender");
+            $gender = undef;
+        }
+    }
+
+    if ( not $gender ) {
+        %seeds = %{ merge( \%female_seeds, \%male_seeds ) };
+    }
+
+    foreach my $seed ( keys %seeds ) {
+        my $s = $seeds{$seed}->{min};
+        while ( $s < $seeds{$seed}->{max} ) {
+            $s += MODULUS_OPERAND_2007;
+            push @cprs, ( $birthdate . sprintf '%04d', $s );
+        }
+    }
+
+    if (wantarray) {
+        return @cprs;
+    } else {
+        return scalar @cprs;
+    }
+}
+
+sub generate1968 {
+    my $birthdate = shift;
+    my $gender = shift || undef;
+
+    _assert_date($birthdate);
+
+    my @cprs;
+    my @malecprs;
+    my @femalecprs;
+
+    my $checksum = 0;
+
+    while ( $checksum < 9999 ) {
+
+        my $cpr = $birthdate . sprintf '%04d', $checksum;
+
+        if ( my $rv = validate1968($cpr) ) {
+
+            if ( defined $gender and $rv ) {
+                if ( $rv == VALID_MALE ) {
+                    push @malecprs, $cpr;
+                } elsif ( $rv == VALID_FEMALE ) {
+                    push @femalecprs, $cpr;
+                }
+
+            } else {
+                push @cprs, $cpr;
+            }
+        }
+        $checksum++;
+    }
+
+    if ( $gender eq FEMALE ) {
+        @cprs = @femalecprs;
+    } elsif ( $gender eq MALE ) {
+        @cprs = @malecprs;
+    }
+
+    if (wantarray) {
+        return @cprs;
+    } else {
+        return scalar @cprs;
+    }
 }
 
 1;
@@ -96,73 +318,145 @@ __END__
 
 =head1 NAME
 
-Business::DK::CPR - a danish CPR code generator/validator
+Business::DK::CPR - a Danish CPR code generator/validator
 
 =head1 VERSION
 
-This documentation describes version 0.02
+This documentation describes version 0.04
 
 =head1 SYNOPSIS
 
-	use Business::DK::CPR qw(validate);
+    use Business::DK::CPR qw(validate);
 
-	my $rv;
-	eval {
-		$rv = validate(1501721111);
-	};
-	
-	if ($@) {
-		die "Code is not of the expected format - $@";
-	}
-	
-	if ($rv) {
-		print "CPR is valid";
-	} else {
-		print "CPR is not valid";
-	}
+    my $rv;
+    eval { $rv = validate(1501721111); };
 
+    if ($@) {
+        die "Code is not of the expected format - $@";
+    }
 
-	use Business::DK::CPR qw(calculate);
+    if ($rv) {
+        print 'CPR is valid';
+    } else {
+        print 'CPR is not valid';
+    }
 
-	my @cprs = calculate(150172);
+    use Business::DK::CPR qw(calculate);
 
-	my $number_of_valid_cprs = calculate(150172);
+    my @cprs = calculate(150172);
+
+    my $number_of_valid_cprs = calculate(150172);
 
 
 =head1 DESCRIPTION
 
-CPR stands for Central Person Registration and it a social security number used 
-in Denmark.
+CPR stands for Central Person Registration and it the social security number
+used in Denmark.
+
+=head1 SUBROUTINES AND METHODS
 
 =head2 validate
 
-This function checks a CPR number for validity. It takes a CPR number as 
-argument and returns 1 (true) for valid and 0 (false) for invalid.
+This function checks a CPR number for validity. It takes a CPR number as
+argument and returns:
 
-It dies if the CPR number is malformed or in anyway unpassable, be aware that
-the 6 first digits are a date (SEE: B<_checkdate> function below.
+=over
 
-NB! it is possible to make fake CPR number, which appear valid, please see 
-MOTIVATION and the B<calculation> function. 
+=item * 1 (true) for valid male CPR number
+
+=item * 2 (true) for a valid female CPR number
+
+=item * 0 (false) for invalid CPR number
+
+=back
+
+It dies if the CPR number is malformed or in any way unparsable, be aware that
+the 6 first digits are representing a date (SEE: L</_checkdate> function below).
+
+In brief, the date indicate the person's birthday, the last 4 digits are
+representing a serial number and control cifer.
+
+For a more thorough discussion on the format of CPR numbers please refer to the
+L<SEE ALSO> section.
+
+L</validate1968> is the old form of the CPR number. It is validated using
+modulus 11.
+
+The new format introduced in 2001 (put to use in 2007, hence the name used
+throughout this package) can be validated using L</validate2007> and generate
+using L</validate2007>.
+
+The L</validate> subroutine wraps both validators and checks using against both.
+
+The L</generate> subroutine wraps both generators and accumulated the results.
+
+NB! it is possible to make fake CPR number, which appear valid, please see
+MOTIVATION and the L</calculate> function. s
+
+L</validate> is also exported as: L</validateCPR>, which is less imposing.
+
+=head2 validateCPR
+
+Better name for export. This is just a wrapper for L</validate>
+
+=head2 validate1968
+
+Validation against the original CPR algorithm introduced in 1968.
+
+=head2 validate2007
+
+Validation against the CPR algorithm introduced in 2007.
+
+=head2 generate
+
+This is a wrapper around calculate, so the naming is uniform to
+L<Business::DK::CVR>
+
+This function takes an integer representing a date and calculates valid CPR
+numbers for the specified date. In scalar context returns the number of valid
+CPR numbers possible and in list context a list of valid CPR numbers.
+
+If the date is malformed or in any way invalid or unspecified the function dies.
+
+=head2 generate1968
+
+Specialized generator for validate1968 compatible CPR numbers. See: L</generate>
+
+=head2 generate2007
+
+Specialized generator for validate2007 compatible CPR numbers. See: L</generate>
 
 =head2 calculate
 
-This function takes an integer representing a date and calculates valid CPR 
-numbers for the specified date. In scalar context returns the number of valid 
-CPR numbers possible and in list context a list of valid CPR numbers.
-
-If the date malformed, in anyway not valid or unspecified the function dies.
+See L</generate> and L</generate1968>. This is the old name for L</generate1968>.
+It is just kept for backwards compatibility and it calls L</generate>.
 
 =head1 PRIVATE FUNCTIONS
 
+=head2 _assertdate
+
+This subroutine takes a digit integer representing a date in the format: DDMMYY.
+
+The date is checked for definedness, contents and length and finally, the
+correctness of the date.
+
+The subroutine returns 1 indicating true upon successful assertion or
+dies upon failure.
+
 =head2 _checkdate
 
-This function takes an integer representing a date in the format: ddmmyy.
+This subroutine takes a digit integer representing a date in the format: DDMMYY.
 
-It check the validity of the date and returns 1 (true) if the date is valid.
+The subroutine returns 1 indicating true upon successful check or
+dies upon failure.
 
-It dies if no argument is provided or if the data in invalid or cannot be 
-parsed.
+=head2 _assert_controlnumber
+
+This subroutine takes an 10 digit integer representing a CPR. The CPR is tested
+for definedness, contents and length.
+
+The subroutine returns 1 indicating true upon successful assertion or
+dies upon failure.
 
 =head1 EXPORTS
 
@@ -170,28 +464,131 @@ Business::DK::CPR exports on request:
 
 =over
 
-=item validate
+=item * L</validate>
 
-=item calculate
+=item * L</validateCPR>
 
-=item _checkdate
+=item * L</validate1968>
+
+=item * L</validate2007>
+
+=item * L</calculate>
+
+=item * L</generate>
+
+=item * L</_checkdate>
 
 =back
+
+=head1 DIAGNOSTICS
+
+=over
+
+=item *
+
+=back
+
+=head1 DEPENDENCIES
+
+=over
+
+=item L<Business::DK::PO>
+
+=item L<Business::DK::CVR>
+
+=item L<Exporter>
+
+=item L<Carp>
+
+=item L<Test::Exception>
+
+=item L<Date::Calc>
+
+=item L<Hash::Merge>
+
+=item L<Tie::IxHash>
+
+=back
+
+=head1 CONFIGURATION AND ENVIRONMENT
+
+This module requires no special configuration or environment.
+
+=head1 INCOMPATIBILITIES
+
+There are no known incompatibilies in this package.
 
 =head1 TODO
 
 =over
 
-=item The CPR agency in Denmark are developing a new CPR scheme, due to the 
-fact that they are running out of valid CPR numbers.
+=item Nothing to do, please refer to the distribution TODO file for the general
+wish list and ideas for future expansions and experiments.
 
 =back
 
-=head1 TESTS
+=head1 TEST AND QUALITY
 
-Coverage of the test suite is at 100%
+The distribution uses the TEST_AUTHOR environment variable to run some
+additional tests, which are interesting to the the author, these can be disabled
+by not defining or setting the environment variable to something not positive.
 
-=head1 BUGS
+=head2 TESTCOVERAGE
+
+Coverage of the test suite is at 89.1% for release 0.04, the coverage report
+was generated with the TEST_AUTHOR flag enabled (SEE: L</TEST AND QUALITY>)
+
+    ---------------------------- ------ ------ ------ ------ ------ ------ ------
+    File                           stmt   bran   cond    sub    pod   time  total
+    ---------------------------- ------ ------ ------ ------ ------ ------ ------
+    blib/lib/Business/DK/CPR.pm    97.3   91.9   84.6  100.0  100.0  100.0   96.0
+    ...raints/Business/DK/CPR.pm   65.9    0.0    0.0   75.0  100.0    0.0   57.6
+    Total                          91.6   81.4   68.8   93.2  100.0  100.0   89.1
+    ---------------------------- ------ ------ ------ ------ ------ ------ ------
+
+=head2 PERL::CRITIC
+
+This section describes use of L<Perl::Critic> from a perspective of documenting
+additions and exceptions to the standard use.
+
+=over
+
+=item [-Miscellanea::ProhibitTies]
+
+This package utilizes L<Tie::IxHash> (SEE: L</DEPENDENCIES>), this module
+relies on tie.
+
+=item [-NamingConventions::ProhibitMixedCaseSubs]
+
+CPR is an abreviation for 'Centrale Person Register' (Central Person Register)
+and it is kept in uppercase.
+
+=item [-ValuesAndExpressions::ProhibitConstantPragma]
+
+This is a personal thing, but I like constants.
+
+=item [-ValuesAndExpressions::ProhibitMagicNumbers]
+
+Some values and boundaries are defined for certain intervals of numbers, these
+are currently kept as is. Perhaps with a refactoring of the use of constants to
+use of L<Readonly> will address this.
+
+=back
+
+=head1 BUGS AND LIMITATIONS
+
+No known bugs at this time.
+
+Business::DK::CPR has some obvious flaws. The package can only check for
+validity and format, whether a given CPR has been generated by some random
+computer program and just resemble a CPR or whether a CPR has ever been assigned
+to a person is not possible without access to central CPR database an access,
+which is costly, limited and monitored.
+
+There are no other known limitations apart from the obvious flaws in the CPR
+system (See: L</SEE ALSO>).
+
+=head1 BUG REPORTING
 
 Please report issues via CPAN RT:
 
@@ -215,18 +612,19 @@ or by sending mail to
 
 =head1 MOTIVATION
 
-I write business related applications. So I need to be able to validate CPR 
+I write business related applications. So I need to be able to validate CPR
 numbers once is a while, hence the validation function.
 
-The calculate function is a completely different story. When I was in school
-we where programming in Comal80 and some of the guys in my school created 
-lists of CPR numbers valid with their own birthdays. The thing was that if you 
-got caught riding the train without a valid ticket the personnel would only 
-check the validity of you CPR number, so all you have to remember was your 
-birthday and 4 more digits not being the 4 last digits of your CPR number.
+The calculate/generate1968 function is however a different story. When I was in
+school we where programming in Comal80 and some of the guys in my school created
+lists of CPR numbers valid with their own birthdays. The thing was that if you
+got caught riding the train without a valid ticket the personnel would only
+check the validity of you CPR number, so all you have to remember was your
+birthday and 4 more digits not being the actual last 4 digits of your CPR
+number.
 
 I guess this was the first hack I ever heard about and saw - I never tried it
-out, but back then it really fascinated me and my interest in computers was 
+out, but back then it really fascinated me and my interest in computers was
 really sparked.
 
 =head1 AUTHOR
@@ -235,7 +633,9 @@ Jonas B. Nielsen, (jonasbn) - C<< <jonasbn@cpan.org> >>
 
 =head1 COPYRIGHT
 
-Business-DK-CPR is (C) by Jonas B. Nielsen, (jonasbn) 2006
+Business-DK-CPR is (C) by Jonas B. Nielsen, (jonasbn) 2006-2008
+
+=head1 LICENSE
 
 Business-DK-CPR is released under the artistic license
 
