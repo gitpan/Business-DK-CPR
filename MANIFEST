@@ -1,7 +1,6 @@
 bin/calculate_cpr.pl
 bin/validate_cpr.pl
 Build.PL
-Business-DK-CPR-0.04.tar.gz
 Changes
 INSTALL
 lib/Business/DK/CPR.pm

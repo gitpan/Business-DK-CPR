@@ -1,6 +1,6 @@
 package Data::FormValidator::Constraints::Business::DK::CPR;
 
-# $Id: CPR.pm 57 2008-11-06 10:08:56Z jonasbn $
+# $Id: CPR.pm 66 2008-11-15 21:59:40Z jonasbn $
 
 use strict;
 use warnings;
@@ -48,7 +48,7 @@ sub match_valid_cpr {
 
     my $cpr = ref $dfv ? $dfv->get_current_constraint_value : $dfv;
 
-    my ($untainted_cpr) = $cpr =~ m/\b(\d{10})\b/mx;
+    my ($untainted_cpr) = $cpr =~ m/\A(\d{10})\Z/msx;
 
     return $dfv->untainted_constraint_value($untainted_cpr);
 }

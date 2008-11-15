@@ -9,12 +9,11 @@ use Carp qw(croak carp);
 use Business::DK::CVR qw(_length _calculate_sum);
 use Business::DK::PO qw(_argument _content);
 use Date::Calc qw(check_date);
-use Hash::Merge qw( merge );
 use base 'Exporter';
 use integer;
 use Tie::IxHash;
 
-$VERSION   = '0.04';
+$VERSION   = '0.05';
 @EXPORT_OK = qw(
     validate
     validateCPR
@@ -50,6 +49,18 @@ tie %male_seeds, 'Tie::IxHash',
     1 => { max => 9997, min => 7 },
     3 => { max => 9999, min => 9 },
     5 => { max => 9995, min => 11 };
+
+sub merge {
+    my ( $left_hashref, $right_hashref ) = @_;
+
+    my %hash = %{$right_hashref};
+
+    foreach ( keys %{$left_hashref} ) {
+        $hash{$_} = $left_hashref->{$_};
+    }
+
+    return \%hash;
+}
 
 sub calculate {
     my $birthdate = shift;
@@ -116,7 +127,7 @@ sub validate2007 {
 
     my $remainder = $control % MODULUS_OPERAND_2007;
 
-    my %seeds = %{ merge( \%male_seeds, \%female_seeds ); };
+    my %seeds = %{ merge( \%male_seeds, \%female_seeds ) };
 
     if ( my $series = $seeds{$remainder} ) {
         if ( $control < $seeds{$remainder}->{min} ) {
@@ -191,12 +202,12 @@ sub _checkdate {
         croak 'argument for birthdate should be provided';
     }
 
-    if (not($birthdate =~ m{^ #beginning of line
+    if (not($birthdate =~ m{\A #beginning of line
               (\d{2}) #day of month, 2 digit representation, 01-31
               (\d{2}) #month, 2 digit representation jan 01 - dec 12
               (\d{2}) #year, 2 digit representation
-              $ #end of line
-              }xm
+              \Z #end of line
+              }xsm
         )
         )
     {
@@ -431,6 +442,13 @@ Specialized generator for validate2007 compatible CPR numbers. See: L</generate>
 See L</generate> and L</generate1968>. This is the old name for L</generate1968>.
 It is just kept for backwards compatibility and it calls L</generate>.
 
+=head2 merge
+
+Mimics L<Hash::Merge>'s L<Hash::Merge/merge> function. Takes two references to
+hashes and returns a single reference to a hash containing the merge of the two
+with the left parameter having precendence. The precedence has not meaning on
+the case in this module, but then the behaviour is documented.
+
 =head1 PRIVATE FUNCTIONS
 
 =head2 _assertdate
@@ -503,8 +521,6 @@ Business::DK::CPR exports on request:
 =item L<Test::Exception>
 
 =item L<Date::Calc>
-
-=item L<Hash::Merge>
 
 =item L<Tie::IxHash>
 
