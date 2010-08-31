@@ -13,7 +13,7 @@ use base 'Exporter';
 use integer;
 use Tie::IxHash;
 
-$VERSION   = '0.05';
+$VERSION   = '0.06';
 @EXPORT_OK = qw(
     validate
     validateCPR
@@ -329,11 +329,11 @@ __END__
 
 =head1 NAME
 
-Business::DK::CPR - a Danish CPR code generator/validator
+Business::DK::CPR - Danish CPR code generator/validator
 
 =head1 VERSION
 
-This documentation describes version 0.04
+This documentation describes version 0.06
 
 =head1 SYNOPSIS
 
@@ -359,12 +359,30 @@ This documentation describes version 0.04
     my $number_of_valid_cprs = calculate(150172);
 
 
+    #Using with Params::Validate
+    #See also examples/
+    
+    use Params::Validate qw(:all);
+    use Business::DK::CPR qw(validateCPR);
+        
+    sub check_cpr {
+        validate( @_,
+        { cpr =>
+            { callbacks =>
+                { 'validate_cpr' => sub { validateCPR($_[0]); } } } } );
+        
+        print $_[1]." is a valid CPR\n";
+    
+    }
+
 =head1 DESCRIPTION
 
-CPR stands for Central Person Registration and it the social security number
+CPR stands for Central Person Registration and is the social security number
 used in Denmark.
 
 =head1 SUBROUTINES AND METHODS
+
+All methods are exported by explicit request. None are exported implicitly.
 
 =head2 validate
 
@@ -385,7 +403,7 @@ It dies if the CPR number is malformed or in any way unparsable, be aware that
 the 6 first digits are representing a date (SEE: L</_checkdate> function below).
 
 In brief, the date indicate the person's birthday, the last 4 digits are
-representing a serial number and control cifer.
+representing a serial number and control cipher.
 
 For a more thorough discussion on the format of CPR numbers please refer to the
 L<SEE ALSO> section.
@@ -401,8 +419,8 @@ The L</validate> subroutine wraps both validators and checks using against both.
 
 The L</generate> subroutine wraps both generators and accumulated the results.
 
-NB! it is possible to make fake CPR number, which appear valid, please see
-MOTIVATION and the L</calculate> function. s
+NB! it is possible to make fake CPR numbers that appear valid, please see
+MOTIVATION and the L</calculate> function.
 
 L</validate> is also exported as: L</validateCPR>, which is less imposing.
 
@@ -502,7 +520,29 @@ Business::DK::CPR exports on request:
 
 =over
 
-=item *
+=item * 'argument for birthdate should be provided', a data parameter has to be
+provided. 
+
+This error is thrown from L</_checkdate>, which is used for all general parameter
+validation.
+
+=item * 'argument: <birthdate> could not be parsed', the date provided is not
+represented by 6 digits (see also below).
+
+This error is thrown from L</_checkdate>, which is used for all general parameter
+validation.
+
+=item * 'argument: <birthdate> has to be a valid date in the format: ddmmyy',
+the date format used for CPR numbers has to adhere to ddmmyy in numeric format
+like so: 311210, day in a two digit representation: 01-31, month also two digit
+representation: 01-12 and finally year in a two digit representation: 00-99.
+
+This error is thrown from L</_checkdate>, which is used for all general parameter
+validation.
+
+=item * 'Unknown gender: <gender>, assuming no gender', this is just a warning
+issued if a call to L</generate2007> has not been provided with a gender
+parameter
 
 =back
 
@@ -510,19 +550,19 @@ Business::DK::CPR exports on request:
 
 =over
 
-=item L<Business::DK::PO>
+=item * L<Business::DK::PO>
 
-=item L<Business::DK::CVR>
+=item * L<Business::DK::CVR>
 
-=item L<Exporter>
+=item * L<Exporter>
 
-=item L<Carp>
+=item * L<Carp>
 
-=item L<Test::Exception>
+=item * L<Test::Exception>
 
-=item L<Date::Calc>
+=item * L<Date::Calc>
 
-=item L<Tie::IxHash>
+=item * L<Tie::IxHash>
 
 =back
 
@@ -557,9 +597,9 @@ was generated with the TEST_AUTHOR flag enabled (SEE: L</TEST AND QUALITY>)
     ---------------------------- ------ ------ ------ ------ ------ ------ ------
     File                           stmt   bran   cond    sub    pod   time  total
     ---------------------------- ------ ------ ------ ------ ------ ------ ------
-    blib/lib/Business/DK/CPR.pm    97.3   91.9   84.6  100.0  100.0  100.0   96.0
-    ...raints/Business/DK/CPR.pm   65.9    0.0    0.0   75.0  100.0    0.0   57.6
-    Total                          91.6   81.4   68.8   93.2  100.0  100.0   89.1
+    blib/lib/Business/DK/CPR.pm    74.2   41.9   53.8  100.0  100.0   72.9   70.3
+    .../Class/Business/DK/CPR.pm   89.1   85.7   77.8   71.4  100.0   27.1   86.0
+    Total                          77.6   50.0   63.6   91.3  100.0  100.0   74.1
     ---------------------------- ------ ------ ------ ------ ------ ------ ------
 
 =head2 PERL::CRITIC
@@ -569,21 +609,21 @@ additions and exceptions to the standard use.
 
 =over
 
-=item [-Miscellanea::ProhibitTies]
+=item * L<Perl::Critic::Policy::Miscellanea::ProhibitTies>
 
 This package utilizes L<Tie::IxHash> (SEE: L</DEPENDENCIES>), this module
 relies on tie.
 
-=item [-NamingConventions::ProhibitMixedCaseSubs]
+=item * L<Perl::Critic::Policy::NamingConventions::ProhibitMixedCaseSubs>
 
 CPR is an abreviation for 'Centrale Person Register' (Central Person Register)
 and it is kept in uppercase.
 
-=item [-ValuesAndExpressions::ProhibitConstantPragma]
+=item * L<Perl::Critic::Policy::ValuesAndExpressions::ProhibitConstantPragma>
 
 This is a personal thing, but I like constants.
 
-=item [-ValuesAndExpressions::ProhibitMagicNumbers]
+=item * L<Perl::Critic::Policy::ValuesAndExpressions::ProhibitMagicNumbers>
 
 Some values and boundaries are defined for certain intervals of numbers, these
 are currently kept as is. Perhaps with a refactoring of the use of constants to
@@ -618,11 +658,15 @@ or by sending mail to
 
 =over
 
-=item L<http://www.cpr.dk/>
+=item * L<http://www.cpr.dk/>
 
-=item L<Business::DK::PO>
+=item * L<Class::Business::DK::CPR>
 
-=item L<Business::DK::CVR>
+=item * L<Data::FormValidator::Constraints::Business::DK::CPR>
+
+=item * L<Business::DK::PO>
+
+=item * L<Business::DK::CVR>
 
 =back
 
@@ -649,7 +693,7 @@ Jonas B. Nielsen, (jonasbn) - C<< <jonasbn@cpan.org> >>
 
 =head1 COPYRIGHT
 
-Business-DK-CPR is (C) by Jonas B. Nielsen, (jonasbn) 2006-2008
+Business-DK-CPR is (C) by Jonas B. Nielsen, (jonasbn) 2006-2010
 
 =head1 LICENSE
 

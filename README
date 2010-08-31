@@ -1,8 +1,8 @@
 NAME
-    Business::DK::CPR - a Danish CPR code generator/validator
+    Business::DK::CPR - Danish CPR code generator/validator
 
 VERSION
-    This documentation describes version 0.04
+    This documentation describes version 0.06
 
 SYNOPSIS
         use Business::DK::CPR qw(validate);
@@ -26,51 +26,68 @@ SYNOPSIS
 
         my $number_of_valid_cprs = calculate(150172);
 
+        #Using with Params::Validate
+        #See also examples/
+    
+        use Params::Validate qw(:all);
+        use Business::DK::CPR qw(validateCPR);
+        
+        sub check_cpr {
+            validate( @_,
+            { cpr =>
+                { callbacks =>
+                    { 'validate_cpr' => sub { validateCPR($_[0]); } } } } );
+        
+            print $_[1]." is a valid CPR\n";
+    
+        }
+
 DESCRIPTION
-    CPR stands for Central Person Registration and it the social security
+    CPR stands for Central Person Registration and is the social security
     number used in Denmark.
 
 SUBROUTINES AND METHODS
+    All methods are exported by explicit request. None are exported
+    implicitly.
+
   validate
     This function checks a CPR number for validity. It takes a CPR number as
     argument and returns:
 
-    *   1 (true) for valid male CPR number
-
-    *   2 (true) for a valid female CPR number
-
-    *   0 (false) for invalid CPR number
+    * 1 (true) for valid male CPR number
+    * 2 (true) for a valid female CPR number
+    * 0 (false) for invalid CPR number
 
     It dies if the CPR number is malformed or in any way unparsable, be
-    aware that the 6 first digits are representing a date (SEE: "_checkdate"
+    aware that the 6 first digits are representing a date (SEE: _checkdate
     function below).
 
     In brief, the date indicate the person's birthday, the last 4 digits are
-    representing a serial number and control cifer.
+    representing a serial number and control cipher.
 
     For a more thorough discussion on the format of CPR numbers please refer
-    to the "SEE ALSO" section.
+    to the SEE ALSO section.
 
-    "validate1968" is the old form of the CPR number. It is validated using
+    validate1968 is the old form of the CPR number. It is validated using
     modulus 11.
 
     The new format introduced in 2001 (put to use in 2007, hence the name
-    used throughout this package) can be validated using "validate2007" and
-    generate using "validate2007".
+    used throughout this package) can be validated using validate2007 and
+    generate using validate2007.
 
-    The "validate" subroutine wraps both validators and checks using against
+    The validate subroutine wraps both validators and checks using against
     both.
 
-    The "generate" subroutine wraps both generators and accumulated the
+    The generate subroutine wraps both generators and accumulated the
     results.
 
-    NB! it is possible to make fake CPR number, which appear valid, please
-    see MOTIVATION and the "calculate" function. s
+    NB! it is possible to make fake CPR numbers that appear valid, please
+    see MOTIVATION and the calculate function.
 
-    "validate" is also exported as: "validateCPR", which is less imposing.
+    validate is also exported as: validateCPR, which is less imposing.
 
   validateCPR
-    Better name for export. This is just a wrapper for "validate"
+    Better name for export. This is just a wrapper for validate
 
   validate1968
     Validation against the original CPR algorithm introduced in 1968.
@@ -92,23 +109,23 @@ SUBROUTINES AND METHODS
 
   generate1968
     Specialized generator for validate1968 compatible CPR numbers. See:
-    "generate"
+    generate
 
   generate2007
     Specialized generator for validate2007 compatible CPR numbers. See:
-    "generate"
+    generate
 
   calculate
-    See "generate" and "generate1968". This is the old name for
-    "generate1968". It is just kept for backwards compatibility and it calls
-    "generate".
+    See the generate and generate1968 entries elsewhere in this document.
+    This is the old name for generate1968. It is just kept for backwards
+    compatibility and it calls generate.
 
   merge
-    Mimics Hash::Merge's "merge" in Hash::Merge function. Takes two
-    references to hashes and returns a single reference to a hash containing
-    the merge of the two with the left parameter having precendence. The
-    precedence has not meaning on the case in this module, but then the
-    behaviour is documented.
+    Mimics Hash::Merge's Hash::Merge function. Takes two references to
+    hashes and returns a single reference to a hash containing the merge of
+    the two with the left parameter having precendence. The precedence has
+    not meaning on the case in this module, but then the behaviour is
+    documented.
 
 PRIVATE FUNCTIONS
   _assertdate
@@ -138,31 +155,45 @@ PRIVATE FUNCTIONS
 EXPORTS
     Business::DK::CPR exports on request:
 
-    *   "validate"
-
-    *   "validateCPR"
-
-    *   "validate1968"
-
-    *   "validate2007"
-
-    *   "calculate"
-
-    *   "generate"
-
-    *   "_checkdate"
+    * validate
+    * validateCPR
+    * validate1968
+    * validate2007
+    * calculate
+    * generate
+    * _checkdate
 
 DIAGNOSTICS
-    *
+    * 'argument for birthdate should be provided', a data parameter has to
+    be provided.
+        This error is thrown from _checkdate, which is used for all general
+        parameter validation.
+
+    * 'argument: <birthdate> could not be parsed', the date provided is not
+    represented by 6 digits (see also below).
+        This error is thrown from _checkdate, which is used for all general
+        parameter validation.
+
+    * 'argument: <birthdate> has to be a valid date in the format: ddmmyy',
+    the date format used for CPR numbers has to adhere to ddmmyy in numeric
+    format like so: 311210, day in a two digit representation: 01-31, month
+    also two digit representation: 01-12 and finally year in a two digit
+    representation: 00-99.
+        This error is thrown from _checkdate, which is used for all general
+        parameter validation.
+
+    * 'Unknown gender: <gender>, assuming no gender', this is just a warning
+    issued if a call to generate2007 has not been provided with a gender
+    parameter
 
 DEPENDENCIES
-    Business::DK::PO
-    Business::DK::CVR
-    Exporter
-    Carp
-    Test::Exception
-    Date::Calc
-    Tie::IxHash
+    * Business::DK::PO
+    * Business::DK::CVR
+    * Exporter
+    * Carp
+    * Test::Exception
+    * Date::Calc
+    * Tie::IxHash
 
 CONFIGURATION AND ENVIRONMENT
     This module requires no special configuration or environment.
@@ -182,33 +213,33 @@ TEST AND QUALITY
 
   TESTCOVERAGE
     Coverage of the test suite is at 89.1% for release 0.04, the coverage
-    report was generated with the TEST_AUTHOR flag enabled (SEE: "TEST AND
-    QUALITY")
+    report was generated with the TEST_AUTHOR flag enabled (SEE: TEST AND
+    QUALITY)
 
         ---------------------------- ------ ------ ------ ------ ------ ------ ------
         File                           stmt   bran   cond    sub    pod   time  total
         ---------------------------- ------ ------ ------ ------ ------ ------ ------
-        blib/lib/Business/DK/CPR.pm    97.3   91.9   84.6  100.0  100.0  100.0   96.0
-        ...raints/Business/DK/CPR.pm   65.9    0.0    0.0   75.0  100.0    0.0   57.6
-        Total                          91.6   81.4   68.8   93.2  100.0  100.0   89.1
+        blib/lib/Business/DK/CPR.pm    74.2   41.9   53.8  100.0  100.0   72.9   70.3
+        .../Class/Business/DK/CPR.pm   89.1   85.7   77.8   71.4  100.0   27.1   86.0
+        Total                          77.6   50.0   63.6   91.3  100.0  100.0   74.1
         ---------------------------- ------ ------ ------ ------ ------ ------ ------
 
   PERL::CRITIC
     This section describes use of Perl::Critic from a perspective of
     documenting additions and exceptions to the standard use.
 
-    [-Miscellanea::ProhibitTies]
-        This package utilizes Tie::IxHash (SEE: "DEPENDENCIES"), this module
+    * Perl::Critic::Policy::Miscellanea::ProhibitTies
+        This package utilizes Tie::IxHash (SEE: DEPENDENCIES), this module
         relies on tie.
 
-    [-NamingConventions::ProhibitMixedCaseSubs]
+    * Perl::Critic::Policy::NamingConventions::ProhibitMixedCaseSubs
         CPR is an abreviation for 'Centrale Person Register' (Central Person
         Register) and it is kept in uppercase.
 
-    [-ValuesAndExpressions::ProhibitConstantPragma]
+    * Perl::Critic::Policy::ValuesAndExpressions::ProhibitConstantPragma
         This is a personal thing, but I like constants.
 
-    [-ValuesAndExpressions::ProhibitMagicNumbers]
+    * Perl::Critic::Policy::ValuesAndExpressions::ProhibitMagicNumbers
         Some values and boundaries are defined for certain intervals of
         numbers, these are currently kept as is. Perhaps with a refactoring
         of the use of constants to use of Readonly will address this.
@@ -223,7 +254,7 @@ BUGS AND LIMITATIONS
     CPR database an access, which is costly, limited and monitored.
 
     There are no other known limitations apart from the obvious flaws in the
-    CPR system (See: "SEE ALSO").
+    CPR system (See: SEE ALSO).
 
 BUG REPORTING
     Please report issues via CPAN RT:
@@ -235,9 +266,11 @@ BUG REPORTING
       bug-Business-DK-CPR@rt.cpan.org
 
 SEE ALSO
-    <http://www.cpr.dk/>
-    Business::DK::PO
-    Business::DK::CVR
+    * http://www.cpr.dk/
+    * Class::Business::DK::CPR
+    * Data::FormValidator::Constraints::Business::DK::CPR
+    * Business::DK::PO
+    * Business::DK::CVR
 
 MOTIVATION
     I write business related applications. So I need to be able to validate
@@ -256,10 +289,10 @@ MOTIVATION
     computers was really sparked.
 
 AUTHOR
-    Jonas B. Nielsen, (jonasbn) - "<jonasbn@cpan.org>"
+    Jonas B. Nielsen, (jonasbn) - `<jonasbn@cpan.org>'
 
 COPYRIGHT
-    Business-DK-CPR is (C) by Jonas B. Nielsen, (jonasbn) 2006-2008
+    Business-DK-CPR is (C) by Jonas B. Nielsen, (jonasbn) 2006-2010
 
 LICENSE
     Business-DK-CPR is released under the artistic license

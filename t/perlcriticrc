@@ -1,5 +1,5 @@
 
-# $Id: perlcriticrc,v 1.3 2008-09-09 19:15:52 jonasbn Exp $
+# $Id: perlcriticrc 7125 2010-08-29 18:33:58Z jonasbn $
 
 severity = 1
 verbose = 8
@@ -25,6 +25,13 @@ functions = print
 
 [-ValuesAndExpressions::ProhibitMagicNumbers]
 
-[-NamingConventions::ProhibitMixedCaseSubs]
+#deprecated [-NamingConventions::ProhibitMixedCaseSubs]
+[-NamingConventions::Capitalization] 
 
 [-Miscellanea::ProhibitTies]
+
+[-Bangs::ProhibitNumberedNames]
+
+[-Subroutines::RequireArgUnpacking]
+
+[-ErrorHandling::RequireCheckingReturnValueOfEval]

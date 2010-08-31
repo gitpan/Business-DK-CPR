@@ -1,28 +1,42 @@
 ---
-name: Business-DK-CPR
-version: 0.05
+abstract: 'Danish CPR code generator/validator'
 author:
   - 'Jonas B. Nielsen, (jonasbn) <jonasbn@cpan.org>'
-abstract: a Danish CPR code generator/validator
+build_requires:
+  Test::Exception: 0
+  Test::Kwalitee: 0
+  Test::More: 0
+  Test::Perl::Critic: 0
+  Test::Prereq::Build: 0
+configure_requires:
+  Module::Build: 0.36
+generated_by: 'Module::Build version 0.3603'
 license: artistic
-resources:
-  license: http://opensource.org/licenses/artistic-license.php
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: Business-DK-CPR
+provides:
+  Business::DK::CPR:
+    file: lib/Business/DK/CPR.pm
+    version: 0.06
+  Class::Business::DK::CPR:
+    file: lib/Class/Business/DK/CPR.pm
+    version: 0.01
+  Data::FormValidator::Constraints::Business::DK::CPR:
+    file: lib/Data/FormValidator/Constraints/Business/DK/CPR.pm
+    version: 0.01
 requires:
   Business::DK::CVR: 0.01
   Business::DK::PO: 0.02
   Carp: 0
+  Class::InsideOut: 0
   Date::Calc: 0
   Exporter: 0
-  Test::Exception: 0
   Tie::IxHash: 0
-provides:
-  Business::DK::CPR:
-    file: lib/Business/DK/CPR.pm
-    version: 0.05
-  Data::FormValidator::Constraints::Business::DK::CPR:
-    file: lib/Data/FormValidator/Constraints/Business/DK/CPR.pm
-    version: 0.01
-generated_by: Module::Build version 0.280801
-meta-spec:
-  url: http://module-build.sourceforge.net/META-spec-v1.2.html
-  version: 1.2
+resources:
+  bugtracker: http://rt.cpan.org/NoAuth/Bugs.html?Dist=Business-DK-CPR
+  homepage: http://logicLAB.jira.com/browse/BDKCPR
+  license: http://www.perlfoundation.org/artistic_license_1_0
+  repository: http://logicLAB.jira.com/svn/BDKCPR
+version: 0.06
