@@ -2,7 +2,7 @@ NAME
     Business::DK::CPR - Danish CPR code generator/validator
 
 VERSION
-    This documentation describes version 0.06
+    This documentation describes version 0.07
 
 SYNOPSIS
         use Business::DK::CPR qw(validate);
@@ -73,7 +73,7 @@ SUBROUTINES AND METHODS
 
     The new format introduced in 2001 (put to use in 2007, hence the name
     used throughout this package) can be validated using validate2007 and
-    generate using validate2007.
+    generate using generate2007.
 
     The validate subroutine wraps both validators and checks using against
     both.
@@ -116,18 +116,27 @@ SUBROUTINES AND METHODS
     generate
 
   calculate
-    See the generate and generate1968 entries elsewhere in this document.
-    This is the old name for generate1968. It is just kept for backwards
-    compatibility and it calls generate.
+    See generate and generate1968. This is the old name for generate1968. It
+    is just kept for backwards compatibility and it calls generate.
 
   merge
-    Mimics Hash::Merge's Hash::Merge function. Takes two references to
-    hashes and returns a single reference to a hash containing the merge of
-    the two with the left parameter having precendence. The precedence has
-    not meaning on the case in this module, but then the behaviour is
+    Mimics Hash::Merge's merge function. Takes two references to hashes and
+    returns a single reference to a hash containing the merge of the two
+    with the left parameter having precedence. The precedence has not
+    meaning on the case in this module, but then the behaviour is
     documented.
 
 PRIVATE FUNCTIONS
+  _length
+    This function validates the length of the argument, it dies if the
+    argument does not fit wihtin the boundaries specified by the arguments
+    provided:
+
+    The _length function takes the following arguments:
+
+    number (mandatory), the number to be validated
+    length required of number (mandatory)
+
   _assertdate
     This subroutine takes a digit integer representing a date in the format:
     DDMMYY.
@@ -187,7 +196,6 @@ DIAGNOSTICS
     parameter
 
 DEPENDENCIES
-    * Business::DK::PO
     * Business::DK::CVR
     * Exporter
     * Carp
@@ -202,7 +210,7 @@ INCOMPATIBILITIES
     There are no known incompatibilies in this package.
 
 TODO
-    Nothing to do, please refer to the distribution TODO file for the
+    * Nothing to do, please refer to the distribution TODO file for the
     general wish list and ideas for future expansions and experiments.
 
 TEST AND QUALITY
@@ -210,6 +218,9 @@ TEST AND QUALITY
     additional tests, which are interesting to the the author, these can be
     disabled by not defining or setting the environment variable to
     something not positive.
+
+    The distribution uses the TEST_CRITIC environment variable to control
+    Perl::Critic tests.
 
   TESTCOVERAGE
     Coverage of the test suite is at 89.1% for release 0.04, the coverage
@@ -232,12 +243,18 @@ TEST AND QUALITY
         This package utilizes Tie::IxHash (SEE: DEPENDENCIES), this module
         relies on tie.
 
-    * Perl::Critic::Policy::NamingConventions::ProhibitMixedCaseSubs
-        CPR is an abreviation for 'Centrale Person Register' (Central Person
-        Register) and it is kept in uppercase.
+    *
+    Perl::Critic::Policy::NamingConventions::NamingConventions::Capitalizati
+    on
+        CPR is an abbreviation for 'Centrale Person Register' (Central
+        Person Register) and it is kept in uppercase.
 
+    * Perl::Critic::Policy::NamingConventions::ProhibitMixedCaseSubs
+    deprecated by the policy above.
     * Perl::Critic::Policy::ValuesAndExpressions::ProhibitConstantPragma
-        This is a personal thing, but I like constants.
+        Constants are good in most cases, see also:
+        http://logicLAB.jira.com/wiki/display/OPEN/Perl-Critic-Policy-Values
+        AndExpressions-ProhibitConstantPragma
 
     * Perl::Critic::Policy::ValuesAndExpressions::ProhibitMagicNumbers
         Some values and boundaries are defined for certain intervals of
@@ -259,7 +276,7 @@ BUGS AND LIMITATIONS
 BUG REPORTING
     Please report issues via CPAN RT:
 
-      http://rt.cpan.org/NoAuth/Bugs.html?Dist=Business-DK-CPR
+      L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Business-DK-CPR>
 
     or by sending mail to
 
@@ -271,6 +288,9 @@ SEE ALSO
     * Data::FormValidator::Constraints::Business::DK::CPR
     * Business::DK::PO
     * Business::DK::CVR
+    *
+    http://logicLAB.jira.com/wiki/display/OPEN/Perl-Critic-Policy-ValuesAndE
+    xpressions-ProhibitConstantPragma
 
 MOTIVATION
     I write business related applications. So I need to be able to validate
@@ -292,7 +312,7 @@ AUTHOR
     Jonas B. Nielsen, (jonasbn) - `<jonasbn@cpan.org>'
 
 COPYRIGHT
-    Business-DK-CPR is (C) by Jonas B. Nielsen, (jonasbn) 2006-2010
+    Business-DK-CPR is (C) by Jonas B. Nielsen, (jonasbn) 2006-2011
 
 LICENSE
     Business-DK-CPR is released under the artistic license

@@ -1,24 +1,28 @@
 # Build.PL for Business-DK-CPR
 
-# $Id: Build.PL 7126 2010-08-29 18:55:54Z jonasbn $
+# $Id: Build.PL 7414 2011-01-30 20:04:02Z jonasbn $
 
+use strict;
+use warnings;
 use Module::Build;
+
 my $build = Module::Build->new(
 	dist_author        => 'Jonas B. Nielsen, (jonasbn) <jonasbn@cpan.org>',
 	module_name        => 'Business::DK::CPR',
 	dist_version_from  => 'lib/Business/DK/CPR.pm',
 	license            => 'artistic',
+    #REF: http://logicLAB.jira.com/wiki/display/OPEN/Module-Build#Module-Build-AutogeneratetheMakefile.PLforbackwardscompatibility
 	create_makefile_pl => 'traditional',
 	create_readme      => 1,
 	recursive_test_files => 1,
 	requires => {
 	    'Exporter'          => '0', #core
 		'Carp'              => '0', #core
-		'Business::DK::PO'  => '0.02',
 		'Business::DK::CVR' => '0.01',
 		'Date::Calc'        => '0',
 		'Tie::IxHash'       => '0',
-		Class::InsideOut    => '0',
+		'Class::InsideOut'  => '0',
+        'Readonly'          => '0',
 	},
     build_requires       => {
         'Test::More' => '0',    #core
@@ -29,11 +33,30 @@ my $build = Module::Build->new(
     },
     meta_merge => {
         resources => {
-            homepage => 'http://logicLAB.jira.com/browse/BDKCPR',
+            homepage => 'http://logiclab.jira.com/wiki/display/BDKCPR/Home',
             bugtracker =>
                 'http://rt.cpan.org/NoAuth/Bugs.html?Dist=Business-DK-CPR',
             repository => 'http://logicLAB.jira.com/svn/BDKCPR',
+            ProjectChangelog =>
+                'http://logiclab.jira.com/browse/BDKCPR#selectedTab=com.atlassian.jira.plugin.system.project%3Achangelog-panel',
+            ProjectSite => 'http://logicLAB.jira.com/browse/BDKCPR',
+            ProjectWiki => 'http://logiclab.jira.com/wiki/display/BDKCPR/Home',
         }
     },
 );
 $build->create_build_script();
+
+__END__
+
+=pod
+
+=head1 SEE ALSO
+
+=over
+
+=item * create_makefile_pl => 'traditional'
+L<http://logicLAB.jira.com/wiki/display/OPEN/Module-Build#Module-Build-AutogeneratetheMakefile.PLforbackwardscompatibility>
+
+=back
+
+=cut
