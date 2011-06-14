@@ -1,6 +1,6 @@
 # Build.PL for Business-DK-CPR
 
-# $Id: Build.PL 7414 2011-01-30 20:04:02Z jonasbn $
+# $Id: Build.PL 7707 2011-06-08 21:19:25Z jonasbn $
 
 use strict;
 use warnings;
@@ -23,6 +23,7 @@ my $build = Module::Build->new(
 		'Tie::IxHash'       => '0',
 		'Class::InsideOut'  => '0',
         'Readonly'          => '0',
+		'Params::Validate'  => '0',
 	},
     build_requires       => {
         'Test::More' => '0',    #core
@@ -54,8 +55,7 @@ __END__
 
 =over
 
-=item * create_makefile_pl => 'traditional'
-L<http://logicLAB.jira.com/wiki/display/OPEN/Module-Build#Module-Build-AutogeneratetheMakefile.PLforbackwardscompatibility>
+=item * L<http://logicLAB.jira.com/wiki/display/OPEN/Module-Build#Module-Build-AutogeneratetheMakefile.PLforbackwardscompatibility>
 
 =back
 

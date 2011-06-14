@@ -1,6 +1,6 @@
 # http://search.cpan.org/~bdfoy/Test-Prereq/lib/Build.pm
 
-# $Id: prerequisites.t 6378 2009-08-22 12:31:30Z jonasbn $
+# $Id: prerequisites.t 7716 2011-06-09 17:01:06Z jonasbn $
 
 use strict;
 use warnings;
@@ -12,7 +12,7 @@ my $msg;
 if ($@) {
     $msg = 'Test::Prereq::Build required to test dependencies';
 } elsif (not $ENV{TEST_AUTHOR}) {
-    $msg = 'Author test.  Set $ENV{TEST_AUTHOR} to a true value to run.';
+    $msg = 'set TEST_AUTHOR to enable.';
 }
 
 plan skip_all => $msg if $msg;

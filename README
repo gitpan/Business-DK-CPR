@@ -26,6 +26,7 @@ SYNOPSIS
 
         my $number_of_valid_cprs = calculate(150172);
 
+
         #Using with Params::Validate
         #See also examples/
     
@@ -54,9 +55,11 @@ SUBROUTINES AND METHODS
     This function checks a CPR number for validity. It takes a CPR number as
     argument and returns:
 
-    * 1 (true) for valid male CPR number
-    * 2 (true) for a valid female CPR number
-    * 0 (false) for invalid CPR number
+    *   1 (true) for valid male CPR number
+
+    *   2 (true) for a valid female CPR number
+
+    *   0 (false) for invalid CPR number
 
     It dies if the CPR number is malformed or in any way unparsable, be
     aware that the 6 first digits are representing a date (SEE: _checkdate
@@ -82,12 +85,12 @@ SUBROUTINES AND METHODS
     results.
 
     NB! it is possible to make fake CPR numbers that appear valid, please
-    see MOTIVATION and the calculate function.
+    see MOTIVATION and the "calculate" function.
 
     validate is also exported as: validateCPR, which is less imposing.
 
   validateCPR
-    Better name for export. This is just a wrapper for validate
+    Better name for export. This is just a wrapper for "validate"
 
   validate1968
     Validation against the original CPR algorithm introduced in 1968.
@@ -164,44 +167,58 @@ PRIVATE FUNCTIONS
 EXPORTS
     Business::DK::CPR exports on request:
 
-    * validate
-    * validateCPR
-    * validate1968
-    * validate2007
-    * calculate
-    * generate
-    * _checkdate
+    *   validate
+
+    *   validateCPR
+
+    *   validate1968
+
+    *   validate2007
+
+    *   calculate
+
+    *   generate
+
+    *   _checkdate
 
 DIAGNOSTICS
-    * 'argument for birthdate should be provided', a data parameter has to
-    be provided.
+    *   'argument for birthdate should be provided', a data parameter has to
+        be provided.
+
         This error is thrown from _checkdate, which is used for all general
         parameter validation.
 
-    * 'argument: <birthdate> could not be parsed', the date provided is not
-    represented by 6 digits (see also below).
+    *   'argument: <birthdate> could not be parsed', the date provided is
+        not represented by 6 digits (see also below).
+
         This error is thrown from _checkdate, which is used for all general
         parameter validation.
 
-    * 'argument: <birthdate> has to be a valid date in the format: ddmmyy',
-    the date format used for CPR numbers has to adhere to ddmmyy in numeric
-    format like so: 311210, day in a two digit representation: 01-31, month
-    also two digit representation: 01-12 and finally year in a two digit
-    representation: 00-99.
+    *   'argument: <birthdate> has to be a valid date in the format:
+        ddmmyy', the date format used for CPR numbers has to adhere to
+        ddmmyy in numeric format like so: 311210, day in a two digit
+        representation: 01-31, month also two digit representation: 01-12
+        and finally year in a two digit representation: 00-99.
+
         This error is thrown from _checkdate, which is used for all general
         parameter validation.
 
-    * 'Unknown gender: <gender>, assuming no gender', this is just a warning
-    issued if a call to generate2007 has not been provided with a gender
-    parameter
+    *   'Unknown gender: <gender>, assuming no gender', this is just a
+        warning issued if a call to generate2007 has not been provided with
+        a gender parameter
 
 DEPENDENCIES
-    * Business::DK::CVR
-    * Exporter
-    * Carp
-    * Test::Exception
-    * Date::Calc
-    * Tie::IxHash
+    *   Business::DK::CVR
+
+    *   Exporter
+
+    *   Carp
+
+    *   Test::Exception
+
+    *   Date::Calc
+
+    *   Tie::IxHash
 
 CONFIGURATION AND ENVIRONMENT
     This module requires no special configuration or environment.
@@ -210,8 +227,8 @@ INCOMPATIBILITIES
     There are no known incompatibilies in this package.
 
 TODO
-    * Nothing to do, please refer to the distribution TODO file for the
-    general wish list and ideas for future expansions and experiments.
+    *   Nothing to do, please refer to the distribution TODO file for the
+        general wish list and ideas for future expansions and experiments.
 
 TEST AND QUALITY
     The distribution uses the TEST_AUTHOR environment variable to run some
@@ -239,24 +256,28 @@ TEST AND QUALITY
     This section describes use of Perl::Critic from a perspective of
     documenting additions and exceptions to the standard use.
 
-    * Perl::Critic::Policy::Miscellanea::ProhibitTies
+    *   Perl::Critic::Policy::Miscellanea::ProhibitTies
+
         This package utilizes Tie::IxHash (SEE: DEPENDENCIES), this module
         relies on tie.
 
-    *
-    Perl::Critic::Policy::NamingConventions::NamingConventions::Capitalizati
-    on
+    *   Perl::Critic::Policy::NamingConventions::NamingConventions::Capitali
+        zation
+
         CPR is an abbreviation for 'Centrale Person Register' (Central
         Person Register) and it is kept in uppercase.
 
-    * Perl::Critic::Policy::NamingConventions::ProhibitMixedCaseSubs
-    deprecated by the policy above.
-    * Perl::Critic::Policy::ValuesAndExpressions::ProhibitConstantPragma
-        Constants are good in most cases, see also:
-        http://logicLAB.jira.com/wiki/display/OPEN/Perl-Critic-Policy-Values
-        AndExpressions-ProhibitConstantPragma
+    *   Perl::Critic::Policy::NamingConventions::ProhibitMixedCaseSubs
+        deprecated by the policy above.
 
-    * Perl::Critic::Policy::ValuesAndExpressions::ProhibitMagicNumbers
+    *   Perl::Critic::Policy::ValuesAndExpressions::ProhibitConstantPragma
+
+        Constants are good in most cases, see also:
+        <http://logicLAB.jira.com/wiki/display/OPEN/Perl-Critic-Policy-Value
+        sAndExpressions-ProhibitConstantPragma>
+
+    *   Perl::Critic::Policy::ValuesAndExpressions::ProhibitMagicNumbers
+
         Some values and boundaries are defined for certain intervals of
         numbers, these are currently kept as is. Perhaps with a refactoring
         of the use of constants to use of Readonly will address this.
@@ -283,14 +304,18 @@ BUG REPORTING
       bug-Business-DK-CPR@rt.cpan.org
 
 SEE ALSO
-    * http://www.cpr.dk/
-    * Class::Business::DK::CPR
-    * Data::FormValidator::Constraints::Business::DK::CPR
-    * Business::DK::PO
-    * Business::DK::CVR
-    *
-    http://logicLAB.jira.com/wiki/display/OPEN/Perl-Critic-Policy-ValuesAndE
-    xpressions-ProhibitConstantPragma
+    *   <http://www.cpr.dk/>
+
+    *   Class::Business::DK::CPR
+
+    *   Data::FormValidator::Constraints::Business::DK::CPR
+
+    *   Business::DK::PO
+
+    *   Business::DK::CVR
+
+    *   <http://logicLAB.jira.com/wiki/display/OPEN/Perl-Critic-Policy-Value
+        sAndExpressions-ProhibitConstantPragma>
 
 MOTIVATION
     I write business related applications. So I need to be able to validate
@@ -309,7 +334,7 @@ MOTIVATION
     computers was really sparked.
 
 AUTHOR
-    Jonas B. Nielsen, (jonasbn) - `<jonasbn@cpan.org>'
+    Jonas B. Nielsen, (jonasbn) - "<jonasbn@cpan.org>"
 
 COPYRIGHT
     Business-DK-CPR is (C) by Jonas B. Nielsen, (jonasbn) 2006-2011
@@ -319,5 +344,5 @@ LICENSE
 
     The distribution is licensed under the Artistic License, as specified by
     the Artistic file in the standard perl distribution
-    (http://www.perl.com/language/misc/Artistic.html).
+    (<http://www.perl.com/language/misc/Artistic.html>).
 
