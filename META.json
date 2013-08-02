@@ -4,7 +4,7 @@
       "Jonas B. Nielsen, (jonasbn) <jonasbn@cpan.org>"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "Module::Build version 0.38, CPAN::Meta::Converter version 2.110930",
+   "generated_by" : "Module::Build version 0.4005, CPAN::Meta::Converter version 2.131560",
    "license" : [
       "artistic_1"
    ],
@@ -16,35 +16,35 @@
    "prereqs" : {
       "build" : {
          "requires" : {
-            "Test::Exception" : 0,
-            "Test::Kwalitee" : 0,
-            "Test::More" : 0,
-            "Test::Perl::Critic" : 0,
-            "Test::Prereq::Build" : 0
+            "Test::Exception" : "0",
+            "Test::Kwalitee" : "0",
+            "Test::More" : "0",
+            "Test::Perl::Critic" : "0",
+            "Test::Prereq::Build" : "0"
          }
       },
       "configure" : {
          "requires" : {
-            "Module::Build" : "0.38"
+            "Module::Build" : "0.40"
          }
       },
       "runtime" : {
          "requires" : {
             "Business::DK::CVR" : "0.01",
-            "Carp" : 0,
-            "Class::InsideOut" : 0,
-            "Date::Calc" : 0,
-            "Exporter" : 0,
-            "Params::Validate" : 0,
-            "Readonly" : 0,
-            "Tie::IxHash" : 0
+            "Carp" : "0",
+            "Class::InsideOut" : "0",
+            "Date::Calc" : "0",
+            "Exporter" : "0",
+            "Params::Validate" : "0",
+            "Readonly" : "0",
+            "Tie::IxHash" : "0"
          }
       }
    },
    "provides" : {
       "Business::DK::CPR" : {
          "file" : "lib/Business/DK/CPR.pm",
-         "version" : "0.08"
+         "version" : "0.09"
       },
       "Class::Business::DK::CPR" : {
          "file" : "lib/Class/Business/DK/CPR.pm",
@@ -71,5 +71,5 @@
       "x_ProjectSite" : "http://logicLAB.jira.com/browse/BDKCPR",
       "x_ProjectWiki" : "http://logiclab.jira.com/wiki/display/BDKCPR/Home"
    },
-   "version" : "0.08"
+   "version" : "0.09"
 }
