@@ -20,7 +20,7 @@ name: Business-DK-CPR
 provides:
   Business::DK::CPR:
     file: lib/Business/DK/CPR.pm
-    version: 0.09
+    version: 0.10
   Class::Business::DK::CPR:
     file: lib/Class/Business/DK/CPR.pm
     version: 0.01
@@ -44,4 +44,4 @@ resources:
   homepage: http://logiclab.jira.com/wiki/display/BDKCPR/Home
   license: http://www.perlfoundation.org/artistic_license_1_0
   repository: http://logicLAB.jira.com/svn/BDKCPR
-version: 0.09
+version: 0.10

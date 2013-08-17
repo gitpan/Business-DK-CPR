@@ -44,7 +44,7 @@
    "provides" : {
       "Business::DK::CPR" : {
          "file" : "lib/Business/DK/CPR.pm",
-         "version" : "0.09"
+         "version" : "0.10"
       },
       "Class::Business::DK::CPR" : {
          "file" : "lib/Class/Business/DK/CPR.pm",
@@ -71,5 +71,5 @@
       "x_ProjectSite" : "http://logicLAB.jira.com/browse/BDKCPR",
       "x_ProjectWiki" : "http://logiclab.jira.com/wiki/display/BDKCPR/Home"
    },
-   "version" : "0.09"
+   "version" : "0.10"
 }

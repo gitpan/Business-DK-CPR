@@ -13,7 +13,6 @@ META.json
 META.yml
 README
 t/00.load.t
-t/boilerplates.t
 t/Business/DK/CPR/_assert_controlnumber.t
 t/Business/DK/CPR/_checkdate.t
 t/Business/DK/CPR/calculate.t
@@ -23,6 +22,7 @@ t/Business/DK/CPR/generate2007.t
 t/Business/DK/CPR/validate.t
 t/Business/DK/CPR/validate1968.t
 t/Business/DK/CPR/validate2007.t
+t/changes.t
 t/Class/Business/DK/CPR/get_number.t
 t/Class/Business/DK/CPR/new.t
 t/Class/Business/DK/CPR/number.t
