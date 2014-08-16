@@ -1,5 +1,5 @@
 
-# $Id: perlcriticrc 7717 2011-06-09 17:01:40Z jonasbn $
+# $Id$
 
 severity = 1
 verbose = 8
@@ -41,6 +41,8 @@ functions = print
 
 [-Bangs::ProhibitFlagComments]
 
+[-Editor::RequireEmacsFileVariables]
+
 #TODO
 
 [-Documentation::RequirePodLinksIncludeText]
@@ -50,3 +52,5 @@ functions = print
 [-RegularExpressions::RequireExtendedFormatting]
 
 [-RegularExpressions::RequireDotMatchAnything]
+
+[-ErrorHandling::RequireUseOfExceptions]

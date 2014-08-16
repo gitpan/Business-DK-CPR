@@ -1,6 +1,6 @@
 # Build.PL for Business-DK-CPR
 
-# $Id: Build.PL 7707 2011-06-08 21:19:25Z jonasbn $
+# $Id$
 
 use strict;
 use warnings;
@@ -24,6 +24,7 @@ my $build = Module::Build->new(
 		'Class::InsideOut'  => '0',
         'Readonly'          => '0',
 		'Params::Validate'  => '0',
+		'perl'              => '5.10.0',
 	},
     build_requires       => {
         'Test::More' => '0',    #core
@@ -37,7 +38,7 @@ my $build = Module::Build->new(
             homepage => 'http://logiclab.jira.com/wiki/display/BDKCPR/Home',
             bugtracker =>
                 'http://rt.cpan.org/NoAuth/Bugs.html?Dist=Business-DK-CPR',
-            repository => 'http://logicLAB.jira.com/svn/BDKCPR',
+            repository => 'https://github.com/jonasbn/bdkcpr',
             ProjectChangelog =>
                 'http://logiclab.jira.com/browse/BDKCPR#selectedTab=com.atlassian.jira.plugin.system.project%3Achangelog-panel',
             ProjectSite => 'http://logicLAB.jira.com/browse/BDKCPR',

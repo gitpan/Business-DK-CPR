@@ -12,9 +12,9 @@ use integer;
 use Tie::IxHash;
 use Readonly;
 use Params::Validate qw( validate_pos SCALAR ARRAYREF );
-use Data::Dumper;
+use 5.010; #5.10.0
 
-our $VERSION   = '0.10';
+our $VERSION   = '0.11';
 our @EXPORT_OK = qw(
     validate
     validateCPR
@@ -214,7 +214,7 @@ sub _checkdate {
     validate_pos(
         @_,
         { type => SCALAR,   regex    => $dateregex },
-        { type => ARRAYREF, optional => 1 }
+        { type => ARRAYREF, optional => 1 },
     );
 
     #Params::Validate does not capture for us, so we re-do our regex
@@ -526,15 +526,15 @@ dies upon failure.
 
 =head2 _checkdate
 
-This subroutine takes a digit integer representing a date in the format: DDMMYY.
+This subroutine takes a 6 digit integer representing a date in the format: DDMMYY.
 
 The subroutine returns 1 indicating true upon successful check or
 dies upon failure.
 
 =head2 _assert_controlnumber
 
-This subroutine takes an 10 digit integer representing a CPR. The CPR is tested
-for definedness, contents and length.
+This subroutine takes an 10 digit integer representing a complete CPR.
+The CPR is tested for definedness, contents and length.
 
 The subroutine returns 1 indicating true upon successful assertion or
 dies upon failure.
@@ -634,6 +634,25 @@ by not defining or setting the environment variable to something not positive.
 
 The distribution uses the TEST_CRITIC environment variable to control
 L<Perl::Critic|Perl::Critic> tests.
+
+=head2 STANDARD TESTS
+
+Here are listed the standard tests, recommended for all CPAN-like distributions.
+The matrix lists what flags are required to run the specific test.
+
+                    NONE TEST_AUTHOR TEST_CRITIC TEST_POD
+    --------------- ---- ----------- ----------- --------
+    00.load.t         *
+    changes.t         *
+    critic.t                              * 
+    kwalitee.t                *
+    pod-coverage.t                                   *
+    pod.t                                            *
+    prerequisites.t           *
+    --------------- ---- ----------- ----------- --------
+
+All of the above tests are actually boilerplates and are maintained as separate
+components.
 
 =head2 TESTCOVERAGE
 
@@ -744,7 +763,7 @@ Jonas B. Nielsen, (jonasbn) - C<< <jonasbn@cpan.org> >>
 
 =head1 COPYRIGHT
 
-Business-DK-CPR is (C) by Jonas B. Nielsen, (jonasbn) 2006-2011
+Business-DK-CPR is (C) by Jonas B. Nielsen, (jonasbn) 2006-2014
 
 =head1 LICENSE
 

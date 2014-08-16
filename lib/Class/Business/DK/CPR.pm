@@ -1,16 +1,17 @@
 package Class::Business::DK::CPR;
 
-# $Id: CPR.pm 7615 2011-04-22 07:20:04Z jonasbn $
+# $Id$
 
 use strict;
 use warnings;
 use Class::InsideOut qw( private register id );
 use Carp qw(croak);
 use English qw(-no_match_vars);
+use 5.010; #5.10.0
 
 use Business::DK::CPR qw(validate1968 validate2007);
 
-our $VERSION = '0.01';
+our $VERSION = '0.11';
 
 private number    => my %number;       # read-only accessor: number()
 private gender    => my %gender;       # read-only accessor: gender()
@@ -228,7 +229,7 @@ Jonas B. Nielsen, (jonasbn) - C<< <jonasbn@cpan.org> >>
 
 =head1 COPYRIGHT
 
-Business-DK-CPR and related is (C) by Jonas B. Nielsen, (jonasbn) 2006-2011
+Business-DK-CPR and related is (C) by Jonas B. Nielsen, (jonasbn) 2006-2014
 
 =head1 LICENSE
 
@@ -236,6 +237,6 @@ Business-DK-CPR and related is released under the artistic license
 
 The distribution is licensed under the Artistic License, as specified
 by the Artistic file in the standard perl distribution
-(http://www.perl.com/language/misc/Artistic.html).
+(L<http://www.perl.com/language/misc/Artistic.html>).
 
 =cut

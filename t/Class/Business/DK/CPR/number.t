@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: number.t 6656 2009-09-30 13:39:23Z jonasbn $
+# $Id$
 
 use strict;
 use warnings;

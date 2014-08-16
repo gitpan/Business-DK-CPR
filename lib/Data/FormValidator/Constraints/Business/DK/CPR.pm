@@ -1,6 +1,6 @@
 package Data::FormValidator::Constraints::Business::DK::CPR;
 
-# $Id: CPR.pm 5577 2008-11-15 21:59:40Z jonasbn $
+# $Id$
 
 use strict;
 use warnings;
@@ -8,6 +8,7 @@ use vars qw(@ISA $VERSION @EXPORT_OK);
 use Business::DK::CPR qw(validate);
 use Scalar::Util qw(blessed);
 use Carp qw(croak);
+use 5.008; #5.8.0
 
 use base 'Exporter';
 
@@ -16,7 +17,7 @@ use base 'Exporter';
 use constant VALID   => 1;
 use constant INVALID => undef;
 
-$VERSION = '0.01';
+$VERSION = '0.11';
 
 sub valid_cpr {
     return sub {
@@ -37,7 +38,7 @@ sub valid_cpr {
         } else {
             return INVALID;
         }
-        }
+    };
 }
 
 sub match_valid_cpr {
@@ -191,7 +192,7 @@ Jonas B. Nielsen, (jonasbn) - C<< <jonasbn@cpan.org> >>
 
 =head1 COPYRIGHT
 
-Business-DK-CPR and related is (C) by Jonas B. Nielsen, (jonasbn) 2006-2008
+Business-DK-CPR and related is (C) by Jonas B. Nielsen, (jonasbn) 2006-2014
 
 =head1 LICENSE
 
@@ -199,6 +200,6 @@ Business-DK-CPR and related is released under the artistic license
 
 The distribution is licensed under the Artistic License, as specified
 by the Artistic file in the standard perl distribution
-(http://www.perl.com/language/misc/Artistic.html).
+(L<http://www.perl.com/language/misc/Artistic.html>).
 
 =cut

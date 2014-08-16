@@ -4,7 +4,7 @@
       "Jonas B. Nielsen, (jonasbn) <jonasbn@cpan.org>"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "Module::Build version 0.4005, CPAN::Meta::Converter version 2.131560",
+   "generated_by" : "Module::Build version 0.4205",
    "license" : [
       "artistic_1"
    ],
@@ -25,7 +25,7 @@
       },
       "configure" : {
          "requires" : {
-            "Module::Build" : "0.40"
+            "Module::Build" : "0.42"
          }
       },
       "runtime" : {
@@ -37,22 +37,23 @@
             "Exporter" : "0",
             "Params::Validate" : "0",
             "Readonly" : "0",
-            "Tie::IxHash" : "0"
+            "Tie::IxHash" : "0",
+            "perl" : "v5.10.0"
          }
       }
    },
    "provides" : {
       "Business::DK::CPR" : {
          "file" : "lib/Business/DK/CPR.pm",
-         "version" : "0.10"
+         "version" : "0.11"
       },
       "Class::Business::DK::CPR" : {
          "file" : "lib/Class/Business/DK/CPR.pm",
-         "version" : "0.01"
+         "version" : "0.11"
       },
       "Data::FormValidator::Constraints::Business::DK::CPR" : {
          "file" : "lib/Data/FormValidator/Constraints/Business/DK/CPR.pm",
-         "version" : "0.01"
+         "version" : "0.11"
       }
    },
    "release_status" : "stable",
@@ -65,11 +66,11 @@
          "http://www.perlfoundation.org/artistic_license_1_0"
       ],
       "repository" : {
-         "url" : "http://logicLAB.jira.com/svn/BDKCPR"
+         "url" : "https://github.com/jonasbn/bdkcpr"
       },
-      "x_ProjectChangelog" : "http://logiclab.jira.com/browse/BDKCPR#selectedTab=com.atlassian.jira.plugin.system.project%3Achangelog-panel",
-      "x_ProjectSite" : "http://logicLAB.jira.com/browse/BDKCPR",
-      "x_ProjectWiki" : "http://logiclab.jira.com/wiki/display/BDKCPR/Home"
+      "x_projectChangelog" : "http://logiclab.jira.com/browse/BDKCPR#selectedTab=com.atlassian.jira.plugin.system.project%3Achangelog-panel",
+      "x_projectSite" : "http://logicLAB.jira.com/browse/BDKCPR",
+      "x_projectWiki" : "http://logiclab.jira.com/wiki/display/BDKCPR/Home"
    },
-   "version" : "0.10"
+   "version" : "0.11"
 }

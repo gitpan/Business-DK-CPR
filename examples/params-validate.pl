@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: params-validate.pl 6941 2010-02-02 21:47:57Z jonasbn $
+# $Id$
 
 use strict;
 use warnings;

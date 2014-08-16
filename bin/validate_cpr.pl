@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl
 
-# $Id: validate_cpr.pl 7847 2012-02-09 09:10:11Z jonasbn $
+# $Id$
 
 use strict;
 use warnings;

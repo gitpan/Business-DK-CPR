@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: new.t 6776 2009-11-04 20:49:28Z jonasbn $
+# $Id$
 
 use strict;
 use warnings;
